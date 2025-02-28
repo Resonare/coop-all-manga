@@ -16,9 +16,11 @@ datasource db {
 model Manga {
   id           Int     @id @default(autoincrement())
   name         String
-  mangalib_url String  @unique // URL должен быть уникальным
+  mangalib_url String
   cover        String
   thumbnail    String
 
-  @@map("mangas") // Опционально: Задает имя таблицы в базе данных
+  @@unique([mangalib_url]) // Add unique Index
+
+  @@map("mangas")
 }
