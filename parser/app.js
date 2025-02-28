@@ -1,24 +1,51 @@
 import express from "express";
-import fs from 'fs';
 
 const PORT = 3000;
+const HOW_MANY_PAGES_TO_PARSE = 30;
 
 const app = express();
 
-// const data = JSON.parse(fs.readFileSync('./page.json', 'utf-8'));
-// console.log(data["data"].length);
-
-app.get("/", async (req, res) => {
+const fetchListPage = async (pageNumber) => {
   try {
     const response = await fetch(
-      "https://api.lib.social/api/manga?fields[]=rate&fields[]=rate_avg&fields[]=userBookmark&site_id[]=1&page=8"
+      `https://api.lib.social/api/manga?site_id[]=1&page=${pageNumber}`
     );
 
-    const data = await response.json();
-    res.json(data);
+    const mangaList = (await response.json())["data"];
+
+    const finalList = [];
+
+    for (let i = 0; i < mangaList.length; i++) {
+      const mangaObject = {
+        name: mangaList[i]["name"],
+        slug_url: mangaList[i]["slug_url"],
+        cover: mangaList[i]["cover"]["default"],
+        thumbnail: mangaList[i]["cover"]["thumbnail"],
+      };
+
+      finalList.push(mangaObject);
+    }
+
+    return finalList;
   } catch (error) {
-    res.status(500).json({ error: "Ошибка запроса" });
+    console.error(error);
   }
+};
+
+app.get("/", async (req, res) => {
+  const startTime = new Date();
+
+  let finalList = [];
+
+  for (let i = 0; i < HOW_MANY_PAGES_TO_PARSE; i++) {
+    finalList = (await fetchListPage(i)).concat(finalList);
+  }
+
+  console.log(
+    `Времени затрачено на общий парсинг ${new Date() - startTime}мс.`
+  );
+
+  res.json(finalList);
 });
 
 app.listen(PORT, () => console.log(`Паресер запущен на порту ${PORT}`));
