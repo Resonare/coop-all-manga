@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-console.log("initial test")
-=======
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 
@@ -62,4 +59,3 @@ app.get("/", async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Парсер запущен на порту ${PORT}`));
->>>>>>> Stashed changes
