@@ -1,0 +1,133 @@
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.tab.active {
+    border-bottom: 3px solid black;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+    padding: 10px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.description-box {
+    background: #e5e5e5;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.tags {
+    margin: 10px 0;
+}
+
+.tag {
+    display: inline-block;
+    background: #ddd;
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin: 5px 5px 5px 0;
+}
+
+.info p {
+    margin: 5px 0;
+}
+
+
+#chapters ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+#chapters ul li {
+    background: #f5f5f5;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#chapters ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    display: block;
+}
+
+#chapters ul li:hover {
+    background: #e0e0e0;
+    transform: scale(1.03);
+}
+
+#chapters ul li:active {
+    background: #d0d0d0;
+    transform: scale(0.98);
+}
+
+.source-selector {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.source-btn {
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+#mangalib {
+    background:#a9a9f5;
+    color: white;
+}
+
+#remanga {
+    background:#a9a9f5;
+    color: white;
+}
+
+.source-btn.active {
+    border: 2px solid black;
+}
+
+.chapter-link {
+    font-size: 20px;
+    color:rgb(242, 0, 255);
+    text-decoration: none;
+}
+
+.chapter-link:hover {
+    text-decoration: underline;
+}
+
+.translations-container {
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border-left: 5px solid rgb(138, 138, 248);
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.translations-container a {
+    border-bottom: 2px solid rgb(138, 138, 248);
+    text-decoration: none;
+}

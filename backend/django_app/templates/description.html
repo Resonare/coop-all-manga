@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Описание манги - ALL MANGA</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/description.css">
+</head>
+<body>
+    <header>
+        <img src="images/Logo.svg" alt="Лого сайта" width="140" height="50">
+        <nav><a href="index.html">Каталог</a></nav>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <img src="#" alt="Обложка манги" width="100%">
+        </aside>
+        <main class="content">
+            <h1>Название</h1>
+            <div class="tabs">
+                <button class="tab active" data-tab="about">О тайтле</button>
+                <button class="tab" data-tab="chapters">Главы</button>
+            </div>
+            <div id="about" class="tab-content active">
+                <div class="description-box">
+                    <h3>Описание</h3>
+                    <p>Тут будет описание манги...</p>
+                </div>
+                <div class="tags">
+                    <span class="tag">Жанр</span>
+                    <span class="tag">Жанр</span>
+                    <span class="tag">Жанр</span>
+                    <span class="tag">#Тег</span>
+                    <span class="tag">#Тег</span>
+                    <span class="tag">#Тег</span>
+                    <span class="tag">#Тег</span>
+                </div>
+                <div class="info">
+                    <p><strong>Автор:</strong> Фамилия И. О.</p>
+                    <p><strong>Год выхода:</strong> 2025</p>
+                    <p><strong>Статус:</strong> Онгоинг</p>
+                    <p><strong>Рейтинг:</strong> 9.02</p>
+                </div>
+            </div>
+            <div id="chapters" class="tab-content">
+                <div class="source-selector">
+                    <button id="mangalib" class="source-btn active">MANGALIB</button>
+                    <button id="remanga" class="source-btn">Remanga</button>
+                </div>
+                <h3>Список глав</h3>
+                <ul></ul>
+            </div>
+        </main>
+    </div>
+    <script src="scripts/script.js"></script>
+</body>
+</html>
