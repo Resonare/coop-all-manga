@@ -1,17 +1,13 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Описание манги - ALL MANGA</title>
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/description.css">
-</head>
-<body>
-    <header>
-        <img src="images/Logo.svg" alt="Лого сайта" width="140" height="50">
-        <nav><a href="index.html">Каталог</a></nav>
-    </header>
+{% load static %}
+{% block title %}
+<title>Описание манги - ALL MANGA</title>
+{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/description.css' %}">
+{% endblock %}
+
+{% block body %}
     <div class="container">
         <aside class="sidebar">
             <img src="#" alt="Обложка манги" width="100%">
@@ -53,6 +49,5 @@
             </div>
         </main>
     </div>
-    <script src="scripts/script.js"></script>
-</body>
-</html>
+    <script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

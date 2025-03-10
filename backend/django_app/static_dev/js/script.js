@@ -1,4 +1,4 @@
-const mangaData = {
+/*const mangaData = {
     "manga1": { 
         title: "Манга 1", 
         Mangalibchapters: [
@@ -95,7 +95,9 @@ const mangaData = {
         ]
     }
 }
-
+*/
+let mangaData = JSON.parse(document.getElementById('mangaData').textContent);
+console.log((mangaData));
 function renderCatalog(filter = "") {
     const catalog = document.getElementById("catalog");
     if (!catalog) return;
@@ -103,13 +105,12 @@ function renderCatalog(filter = "") {
     catalog.innerHTML = "";  
     const fragment = document.createDocumentFragment();
 
-    Object.keys(mangaData).forEach(key => {
-        const manga = mangaData[key];
-        if (manga.title.toLowerCase().includes(filter.toLowerCase())) {
+    mangaData.forEach(manga => {
+        if (manga.name.toLowerCase().includes(filter.toLowerCase())) {
             const item = document.createElement("div");
             item.className = "item";
-            item.textContent = manga.title;
-            item.dataset.id = key;
+            item.textContent = manga.name;
+            item.dataset.id = manga.name;
             item.addEventListener("click", () => {
                 window.location.href = `description.html?id=${key}`;
             });

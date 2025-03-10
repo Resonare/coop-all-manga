@@ -1,0 +1,38 @@
+[
+    {
+		"model": "titles.titles",
+        "pk": 1,
+		"fields": {
+			"name": "Test1",
+			"year": 2073,
+			"status": "ongoing",
+			"type": "manhva",
+			"rating": 9.05,
+			"thumbnail": "link"
+		}
+    },
+	{
+		"model": "titles.titles",
+        "pk": 2,
+		"fields": {
+			"name": "Test2",
+			"year": 2077,
+			"status": "ongoing",
+			"type": "manhva",
+			"rating": 9.05,
+			"thumbnail": "link"
+		}
+    },
+	{
+		"model": "titles.titles",
+        "pk": 3,
+		"fields": {
+			"name": "Test3",
+			"year": 2075,
+			"status": "ongoing",
+			"type": "manhva",
+			"rating": 9.05,
+			"thumbnail": "link"
+		}
+    }
+]

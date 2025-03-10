@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALL MANGA</title>
-    <link rel="stylesheet" href="styles/style.css">
-</head>
-<body>
-    <header>
-        <img src="images/Logo.svg" alt="Лого сайта" width="140" height="50">
-        <nav><a href="index.html">Каталог</a></nav>
-    </header>
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+<title>ALL MANGA</title>
+{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+{% block body %}
     <div class="container">
         <main class="content">
             <input type="text" id="search" placeholder="Поиск...">
@@ -67,6 +63,8 @@
             </div>
         </aside>
     </div>
-    <script src="scripts/script.js"></script>
-</body>
-</html>
+
+    {{ json|json_script:"mangaData" }}
+
+    <script src="{% static 'js/script.js' %}"></script>
+{% endblock %}
