@@ -1,1 +1,1 @@
-*venv/
+beckend/venv/
