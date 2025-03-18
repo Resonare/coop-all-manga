@@ -3,7 +3,7 @@ from django.core.serializers import serialize
 from django.views import generic
 import json
 
-#from .models import Titles
+#from .models import Titles, Chapter
 import logging
 logger = logging.getLogger(__name__)
 
@@ -26,10 +26,16 @@ class TitlesList(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(TitlesList, self).get_context_data(**kwargs)
         data = serialize("json", context['titles_list'])
-        logger.critical(json)
         context['json'] = data
         return context
 
 
 class TitlesDetail(generic.DetailView):
-    pass
+    #model = Titles
+    template_name = 'titles/description.html'
+    def get_context_data(self, **kwargs):
+        context = super(TitlesList, self).get_context_data(**kwargs)
+        #context['chapters'] = Chapter.objects.filter(title=self.get_object())
+        data = serialize("json", context['titles_list'])
+        context['json'] = data
+        return context
