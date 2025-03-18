@@ -3,14 +3,14 @@ from django.core.serializers import serialize
 from django.views import generic
 import json
 
-from .models import Titles
+#from .models import Titles
 import logging
 logger = logging.getLogger(__name__)
 
 
 class TitlesList(generic.ListView):
     """Список тайтлов."""
-    model = Titles
+    #model = Titles
     template_name = 'titles/index.html'
 
     '''def get_queryset(self):
