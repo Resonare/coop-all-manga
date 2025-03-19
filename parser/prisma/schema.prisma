@@ -16,6 +16,10 @@ datasource db {
 model Manga {
   id           Int     @id @default(autoincrement())
   name         String
+  year         String
+  status       String
+  type         String
+  rating       String
   mangalib_url String
   cover        String
   thumbnail    String
