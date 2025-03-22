@@ -5,7 +5,7 @@ from titles import views
 app_name = 'titles'
 
 urlpatterns = [
-    path('', views.TitlesList.as_view(), name='catalog'),
-    path('titles/', views.TitlesList.as_view(), name='catalog'),
-    path('titles/<int:pk>/', views.TitlesDetail.as_view(), name='detail'),
+    path('', views.TitleList.as_view(), name='catalog'),
+    path('titles/', views.TitleList.as_view(), name='catalog'),
+    path('titles/<int:pk>/', views.TitleDetail.as_view(), name='detail'),
 ]

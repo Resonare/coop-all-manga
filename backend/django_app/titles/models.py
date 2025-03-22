@@ -8,8 +8,22 @@ class Title(models.Model):
     pass
 
 
-class Сhapter(models.Model):
+class Chapter(models.Model):
     """
     Модель данных для глав тайтлов
+    """
+    pass
+
+
+class Genre(models.Model):
+    """
+    Модель данных для жанров
+    """
+    pass
+
+
+class Tag(models.Model):
+    """
+    Модель данных для тегов
     """
     pass
