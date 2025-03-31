@@ -1,3 +1,4 @@
+{% extends "base.html" %}
 {% load static %}
 {% block title %}
 <title>Описание манги - ALL MANGA</title>
@@ -6,48 +7,42 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 <link rel="stylesheet" href="{% static 'css/description.css' %}">
 {% endblock %}
-
 {% block body %}
-    <div class="container">
-        <aside class="sidebar">
-            <img src="#" alt="Обложка манги" width="100%">
-        </aside>
-        <main class="content">
-            <h1>Название</h1>
-            <div class="tabs">
-                <button class="tab active" data-tab="about">О тайтле</button>
-                <button class="tab" data-tab="chapters">Главы</button>
+{% include "includes/header.html" %}
+<div class="container">
+    <aside class="sidebar">
+        <img src="#" alt="Обложка манги" width="100%">
+    </aside>
+    <main class="content">
+        <h1>Название</h1>
+        <div class="tabs">
+            <button class="tab active" data-tab="about">О тайтле</button>
+            <button class="tab" data-tab="chapters">Главы</button>
+        </div>
+        <div id="about" class="tab-content active">
+            <div class="description-box">
+                <h3>Описание</h3>
+                <p>Тут будет описание манги...</p>
             </div>
-            <div id="about" class="tab-content active">
-                <div class="description-box">
-                    <h3>Описание</h3>
-                    <p>Тут будет описание манги...</p>
-                </div>
-                <div class="tags">
-                    <span class="tag">Жанр</span>
-                    <span class="tag">Жанр</span>
-                    <span class="tag">Жанр</span>
-                    <span class="tag">#Тег</span>
-                    <span class="tag">#Тег</span>
-                    <span class="tag">#Тег</span>
-                    <span class="tag">#Тег</span>
-                </div>
-                <div class="info">
-                    <p><strong>Автор:</strong> Фамилия И. О.</p>
-                    <p><strong>Год выхода:</strong> 2025</p>
-                    <p><strong>Статус:</strong> Онгоинг</p>
-                    <p><strong>Рейтинг:</strong> 9.02</p>
-                </div>
+            <div class="tags">
             </div>
-            <div id="chapters" class="tab-content">
-                <div class="source-selector">
-                    <button id="mangalib" class="source-btn active">MANGALIB</button>
-                    <button id="remanga" class="source-btn">Remanga</button>
-                </div>
-                <h3>Список глав</h3>
-                <ul></ul>
+            <div class="info">
+                <p><strong>Тип:</strong> <span id="manga-type"></span></p> 
+                <p><strong>Автор:</strong> <span id="manga-author"></span></p>
+                <p><strong>Год:</strong> <span id="manga-year"></span></p>
+                <p><strong>Статус:</strong> <span id="manga-status"></span></p>
+                <p><strong>Рейтинг:</strong> <span id="manga-rating"></span></p>
             </div>
-        </main>
-    </div>
-    <script src="{% static 'js/description.js' %}"></script>
+        </div>
+        <div id="chapters" class="tab-content">
+            <div class="source-selector">
+                <button id="mangalib" class="source-btn active">MANGALIB</button>
+                <button id="remanga" class="source-btn">Remanga</button>
+            </div>
+            <h3>Список глав</h3>
+            <ul></ul>
+        </div>
+    </main>
+</div>
+<script src="{% static 'js/description.js' %}"></script>
 {% endblock %}

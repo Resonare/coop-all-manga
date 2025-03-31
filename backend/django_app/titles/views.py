@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.core.serializers import serialize
 from django.views import generic
 
@@ -39,3 +40,11 @@ class TitleDetail(generic.DetailView):
         data = serialize("json", context['title_detail'])
         context['json'] = data
         return context
+
+
+def page_not_found(request, exception):
+    return render(request, 'titles/404.html', status=404)
+
+
+def server_error(request):
+    return render(request, 'titles/500.html', status=500)

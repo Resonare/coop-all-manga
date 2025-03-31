@@ -41,11 +41,17 @@ nav a:hover {
 .container {
     display: flex;
 }
-.sidebar {
+.sidebar{
     width: 300px;
     background: #e5e5e5;
     padding: 20px;
 }
+
+.sidebar img{
+    width: 300px;
+    height: 450px;
+}
+
 .content {
     flex-grow: 1;
     padding: 20px;
@@ -58,7 +64,6 @@ nav a:hover {
 }
 .item {
     background: #ddd;
-    height: 220px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,6 +74,39 @@ nav a:hover {
 .item:hover {
     transform: scale(1.05);
 }
+
+#catalog {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.item {
+    height: 220px;
+    width: 160px;
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.item:hover {
+    transform: scale(1.05);
+}
+
+.title {
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
 input, select {
     width: 100%;
     padding: 8px;
@@ -122,4 +160,15 @@ input, select {
 .button-reset:hover {
     background-color:rgb(193, 193, 193);
 }
-
+.filter-message {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #7676f7;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    z-index: 1000;
+}

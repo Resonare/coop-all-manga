@@ -7,64 +7,63 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 {% endblock %}
 {% block body %}
-    <div class="container">
-        <main class="content">
-            <input type="text" id="search" placeholder="Поиск...">
-            <div class="catalog" id="catalog"></div>
-        </main>
-        <aside class="sidebar">
-            <h3>Сортировать</h3>
-            <label>Год выхода:</label>
-            <input type="number" id="yearFrom" placeholder="От" min="1930" max="2026"> 
-            <input type="number" id="yearTo" placeholder="До" min="1930" max="2026">
-            <label>Рейтинг:</label>
-            <input type="number" id="ratingMin" placeholder="Мин" min="0" max="9">
-            <input type="number" id="ratingMax" placeholder="Макс" min="1" max="10">
-            <br>
-            <div class="checkbox-container">
-                <label for="popular">Популярность</label>
-                <input type="checkbox" id="popular">
-            </div>
-        
-            <h3>Фильтр</h3>
-            <label>Жанры</label>
-            <select id="genres"><option>Выбрать...</option></select>
-            <label>Теги</label>
-            <select id="tags"><option>Выбрать...</option></select>
-        
-            <h3>Возрастной рейтинг</h3>
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="age" value="none"> Нет</label>
-                <label><input type="checkbox" name="age" value="6"> +6</label>
-                <label><input type="checkbox" name="age" value="12"> +12</label>
-                <label><input type="checkbox" name="age" value="16"> +16</label>
-                <label><input type="checkbox" name="age" value="18"> +18</label>
-            </div>
-        
-            <h3>Тип</h3>
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="type" value="manga"> Манга</label>
-                <label><input type="checkbox" name="type" value="manhwa"> Манхва</label>
-                <label><input type="checkbox" name="type" value="manhua"> Маньхуа</label>
-                <label><input type="checkbox" name="type" value="rumanga"> Руманга</label>
-            </div>
-        
-            <h3>Статус тайтла</h3>
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="status" value="ongoing"> Онгоинг</label>
-                <label><input type="checkbox" name="status" value="announcement"> Анонс</label>
-                <label><input type="checkbox" name="status" value="completed"> Завершен</label>
-                <label><input type="checkbox" name="status" value="discontinued"> Прекращен</label>
-                <label><input type="checkbox" name="status" value="paused"> Приостановлен</label>
-            </div>
-            <div class="button-container">
-                <button id="applyFilters" class="button button-apply">Применить</button>
-                <button id="resetFilters" class="button button-reset">Сбросить</button>
-            </div>
-        </aside>
-    </div>
-
-    {{ json|json_script:"mangaData" }}
-
-    <script src="{% static 'js/index.js' %}"></script>
+{% include "includes/header.html" %}
+<div class="container">
+    <main class="content">
+        <input type="text" id="search" placeholder="Поиск...">
+        <div class="catalog" id="catalog"></div>
+    </main>
+    <aside class="sidebar">
+        <h3>Сортировать</h3>
+        <label>Год выхода:</label>
+        <input type="number" id="yearFrom" placeholder="От" min="1930" max="2026"> 
+        <input type="number" id="yearTo" placeholder="До" min="1930" max="2026">
+        <label>Рейтинг:</label>
+        <input type="number" id="ratingMin" placeholder="Мин" min="0" max="9">
+        <input type="number" id="ratingMax" placeholder="Макс" min="1" max="10">
+        <br>
+        <div class="checkbox-container">
+            <label for="popular">Популярность</label>
+            <input type="checkbox" id="popular">
+        </div>
+    
+        <h3>Фильтр</h3>
+        <label>Жанры</label>
+        <select id="genres"><option>Выбрать...</option></select>
+        <label>Теги</label>
+        <select id="tags"><option>Выбрать...</option></select>
+    
+        <h3>Возрастной рейтинг</h3>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="age" value="none"> Нет</label>
+            <label><input type="checkbox" name="age" value="6"> +6</label>
+            <label><input type="checkbox" name="age" value="12"> +12</label>
+            <label><input type="checkbox" name="age" value="16"> +16</label>
+            <label><input type="checkbox" name="age" value="18"> +18</label>
+        </div>
+    
+        <h3>Тип</h3>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="type" value="manga"> Манга</label>
+            <label><input type="checkbox" name="type" value="manhwa"> Манхва</label>
+            <label><input type="checkbox" name="type" value="manhua"> Маньхуа</label>
+            <label><input type="checkbox" name="type" value="rumanga"> Руманга</label>
+        </div>
+    
+        <h3>Статус тайтла</h3>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="status" value="ongoing"> Онгоинг</label>
+            <label><input type="checkbox" name="status" value="announcement"> Анонс</label>
+            <label><input type="checkbox" name="status" value="completed"> Завершен</label>
+            <label><input type="checkbox" name="status" value="discontinued"> Прекращен</label>
+            <label><input type="checkbox" name="status" value="paused"> Приостановлен</label>
+        </div>
+        <div class="button-container">
+            <button id="applyFilters" class="button button-apply">Применить</button>
+            <button id="resetFilters" class="button button-reset">Сбросить</button>
+        </div>
+    </aside>
+</div>
+{{ json|json_script:"mangaData" }}
+<script src="{% static 'js/index.js' %}"></script>
 {% endblock %}

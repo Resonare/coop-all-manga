@@ -3,6 +3,7 @@ from django.urls import path
 from titles import views
 
 app_name = 'titles'
+handler404 = 'titles.views.page_not_found'
 
 urlpatterns = [
     path('', views.TitleList.as_view(), name='catalog'),

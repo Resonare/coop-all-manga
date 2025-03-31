@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+<title>404 - Страница не найдена</title>
+{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/error.css' %}">
+{% endblock %}
+{% block body %}
+<div class="error-container">
+    <h1 class="glitch" data-text="404">404</h1>
+    <p>О нет! Ты потерялся в мире манги!</p>
+    <a href="#" class="btn go-back">Вернуться на главную</a>
+</div>
+<script src="{% static 'js/error.js' %}"></script>
+{% endblock %}
