@@ -5,7 +5,7 @@ import mainController from "../controllers/main.js";
 const router = express.Router();
 
 router.get("/parse", mainController.parse);
-router.get("/get-all", mainController.getAll);
-router.get("/get-title", mainController.getTitle);
+router.get("/titles", mainController.getAll);
+router.get("/titles/:titleId", mainController.getTitle);
 
 export default router;

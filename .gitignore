@@ -1,3 +1,4 @@
 parser/node_modules
 parser/prisma/dev.db
 .env
+parser/.env

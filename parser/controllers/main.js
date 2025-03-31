@@ -55,9 +55,9 @@ const fetchTitle = async (id) => {
             chapterData["branches"].forEach(translate => {
                 resChapterData.push({
                     chapter_title: chapterTitle,
-                    release: translate["created_at"],
+                    release: translate["created_at"].split("T")[0],
                     translator: translate["teams"][0]["name"],
-                    link: `v${chapterData["volume"]}/c${chapterData["number"]}${chapterData["branches"].length > 1 ? `?bid=` + translate["branch_id"] : ``}`
+                    link: `${mangaSavedData.mangalib_url}/read/v${chapterData["volume"]}/c${chapterData["number"]}${chapterData["branches"].length > 1 ? `?bid=` + translate["branch_id"] : ``}`
                 });
             });
         });
@@ -86,8 +86,8 @@ const fetchListPage = async (pageNumber) => {
 
         for (const manga of mangaList) {
             const mangaObject = {
-                name: manga["name"],
-                year: manga["releaseDateString"].substring(0, manga["releaseDateString"].length),
+                name: manga["rus_name"],
+                year: manga["releaseDateString"].substring(0, manga["releaseDateString"].length - 3),
                 status: manga["status"]["label"],
                 type: manga["type"]["label"],
                 rating: manga["rating"]["average"],
@@ -130,8 +130,7 @@ const mainController = {
     getTitle: async (req, res) => {
         const startTime = new Date();
 
-        const id = 1; // Тестовое значение
-
+        const id = +req.params.titleId;
         const manga = await fetchTitle(id);
 
         await prisma.$disconnect(); // Закрываем соединение с БД
