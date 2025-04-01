@@ -36,9 +36,11 @@ class TitleDetail(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(TitleDetail, self).get_context_data(**kwargs)
-        # context['chapters'] = Chapter.objects.filter(title=self.get_object())
-        data = serialize("json", context['title_detail'])
-        context['json'] = data
+        chapters = list(Chapter.objects.all().filter(manga=self.get_object()))
+        context['chapters_json'] = serialize("json", chapters)
+        context['title_json'] = serialize("json", [context['title'], ])
+        context['tags_json'] = serialize("json", list(self.object.tags.all()))
+        context['genres_json'] = serialize("json", list(self.object.genres.all()))
         return context
 
 

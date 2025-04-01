@@ -16,7 +16,7 @@ function renderCatalog(data, filter = "") {
             item.src = manga.fields.thumbnail;
             item.dataset.id = manga.pk;
             item.addEventListener("click", () => {
-                window.location.href = `description.html?id=${manga.pk}`;
+                window.location.href = `titles/${manga.pk}`;
             });
 
             const title = document.createElement("p");

@@ -44,5 +44,9 @@
         </div>
     </main>
 </div>
+{{ title_json|json_script:"title_json" }}
+{{ chapters_json|json_script:"chapters_json" }}
+{{ tags_json|json_script:"tags_json" }}
+{{ genres_json|json_script:"genres_json" }}
 <script src="{% static 'js/description.js' %}"></script>
 {% endblock %}
