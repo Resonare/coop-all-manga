@@ -50,11 +50,11 @@ const fetchTitle = async (id) => {
         const resChapterData = [];
 
         foundChaptersData.forEach(chapterData => {
-            const chapterTitle = `Том ${chapterData["volume"]} Глава ${chapterData["number"]}${chapterData["name"] ? ` - ${chapterData["name"]}` : ``}`;
+            const chapterName = `Том ${chapterData["volume"]} Глава ${chapterData["number"]}${chapterData["name"] ? ` - ${chapterData["name"]}` : ``}`;
 
             chapterData["branches"].forEach(translate => {
                 resChapterData.push({
-                    chapter_title: chapterTitle,
+                    name: chapterName,
                     release: translate["created_at"].split("T")[0],
                     translator: translate["teams"][0]["name"],
                     link: `${mangaSavedData.mangalib_url}/read/v${chapterData["volume"]}/c${chapterData["number"]}${chapterData["branches"].length > 1 ? `?bid=` + translate["branch_id"] : ``}`
