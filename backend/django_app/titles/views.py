@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.core.serializers import serialize
 from django.views import generic
+from rest_framework import viewsets
 
-from .models import Title, Chapter
+from .models import Title, Chapter, Genre, Tag, Chapter
 import logging
+from .serializers import TitleSerializer, GenreSerializer, TagSerializer, ChapterSerializer
 logger = logging.getLogger(__name__)
 
 
@@ -43,6 +45,22 @@ class TitleDetail(generic.DetailView):
         context['genres_json'] = serialize("json", list(self.object.genres.all()))
         return context
 
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+
+class GenreViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+class ChapterViewSet(viewsets.ModelViewSet):
+    queryset = Chapter.objects.all()
+    serializer_class = ChapterSerializer
 
 def page_not_found(request, exception):
     return render(request, 'titles/404.html', status=404)
