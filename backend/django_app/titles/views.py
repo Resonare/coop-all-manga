@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.core.serializers import serialize
 from django.views import generic
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 
 from .models import Title, Chapter, Genre, Tag, Chapter
 import logging
@@ -49,6 +50,20 @@ class TitleDetail(generic.DetailView):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Если пришёл массив объектов
+        if isinstance(request.data, list):
+            serializer = self.get_serializer(data=request.data, many=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_bulk_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Обычное поведение для одного объекта
+        return super().create(request, *args, **kwargs)
+
+    def perform_bulk_create(self, serializer):
+        serializer.save()
+
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()

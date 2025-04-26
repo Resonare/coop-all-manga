@@ -36,6 +36,7 @@ class Title(NameAbstract):
     """
     Модель данных для тайтла
     """
+    id = models.IntegerField(primary_key=True) 
     description = models.TextField("Описание", default="Нет описания")
     author = models.CharField("Автор", max_length=255, default="Неизвестен")
     year = models.CharField("Год выпуска", max_length=4, default="0000")

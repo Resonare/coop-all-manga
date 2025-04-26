@@ -35,38 +35,58 @@ class ChapterSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для тайтла
-    """
-    genres = GenreSerializer(many=True)
-    tags = TagSerializer(many=True)
-    chapters = ChapterSerializer(many=True)
+    id = serializers.IntegerField(required=False)  # id не обязателен
+    genres = GenreSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    chapters = ChapterSerializer(many=True, read_only=True)
+    genres_input = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
+    tags_input = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
+    sources = serializers.DictField(child=serializers.ListField(child=serializers.DictField()), write_only=True, required=False)
 
     class Meta:
         model = Title
-        fields = ['id', 'name', 'description', 'author', 'year', 'status', 'type', 'rating', 'genres', 'tags', 'thumbnail', 'cover', 'chapters']
+        fields = [
+            'id', 'name', 'description', 'author', 'year', 'status', 'type', 'rating',
+            'genres', 'tags', 'thumbnail', 'cover', 'chapters', 'sources',
+            'genres_input', 'tags_input'
+        ]
+        extra_kwargs = {
+            'genres': {'required': False},
+            'tags': {'required': False},
+            'chapters': {'required': False},
+            'id': {'required': False},
+        }
 
     def create(self, validated_data):
-        genres_data = validated_data.pop('genres')
-        tags_data = validated_data.pop('tags')
-        chapters_data = validated_data.pop('chapters')
+        id_value = validated_data.pop('id', None)
+        # Если id передан и такой тайтл уже есть — возвращаем его, не создаём новый
+        if id_value is not None and Title.objects.filter(id=id_value).exists():
+            return Title.objects.get(id=id_value)
+        if id_value is not None:
+            title = Title.objects.create(id=id_value, **validated_data)
+        else:
+            title = Title.objects.create(**validated_data)
+        genres_data = validated_data.pop('genres_input', [])
+        tags_data = validated_data.pop('tags_input', [])
+        sources_data = validated_data.pop('sources', {})
 
-        # Создаем объект Title
-        title = Title.objects.create(**validated_data)
-
-        # Обрабатываем жанры
-        for genre_data in genres_data:
-            genre, created = Genre.objects.get_or_create(name=genre_data['name'])
+        for genre_name in genres_data:
+            genre, _ = Genre.objects.get_or_create(name=genre_name)
             title.genres.add(genre)
 
-        # Обрабатываем теги
-        for tag_data in tags_data:
-            tag, created = Tag.objects.get_or_create(name=tag_data['name'])
+        for tag_name in tags_data:
+            tag, _ = Tag.objects.get_or_create(name=tag_name)
             title.tags.add(tag)
 
-        # Создаем главы и связываем их с тайтлом
-        for chapter_data in chapters_data:
-            chapter_data['manga'] = title  # Привязываем главу к тайтлу
-            Chapter.objects.create(**chapter_data)
+        for source, chapters in sources_data.items():
+            for chapter_data in chapters:
+                Chapter.objects.create(
+                    manga=title,
+                    source=source,
+                    name=chapter_data['name'],
+                    release=chapter_data['release'],
+                    translator=chapter_data['translator'],
+                    link=chapter_data['link']
+                )
 
         return title
