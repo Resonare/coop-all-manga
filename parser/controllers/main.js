@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const HOW_MANY_PAGES_TO_PARSE = 10; // Уменьши для теста
+const HOW_MANY_MANGALIB_PAGES_TO_PARSE = 100;
+const HOW_MANY_REMANGA_PAGES_TO_PARSE = 20;
 
 const fetchTitle = async (id) => {
     try {
@@ -40,29 +41,76 @@ const fetchTitle = async (id) => {
             }
         };
 
-        const chaptersDataResponse = await fetch(
+        const chaptersMangalibResponse = await fetch(
             `https://api2.mangalib.me/api/manga/${mangaSavedData.mangalib_url}/chapters`
         );
 
-        if (!chaptersDataResponse.ok) throw new Error(`Ошибка запроса: ${chaptersDataResponse.status}`);
+        if (!chaptersMangalibResponse.ok) throw new Error(`Ошибка запроса к главам Mangalib: ${chaptersMangalibResponse.status}`);
 
-        const foundChaptersData = (await chaptersDataResponse.json())["data"];
-        const resChapterData = [];
+        const foundChaptersData = (await chaptersMangalibResponse.json())["data"];
+        const mangalibChapters = [];
 
         foundChaptersData.forEach(chapterData => {
             const chapterName = `Том ${chapterData["volume"]} Глава ${chapterData["number"]}${chapterData["name"] ? ` - ${chapterData["name"]}` : ``}`;
 
             chapterData["branches"].forEach(translate => {
-                resChapterData.push({
+                mangalibChapters.push({
                     name: chapterName,
                     release: translate["created_at"].split("T")[0],
-                    translator: translate["teams"][0]["name"],
+                    translator: translate["teams"].map(team => team["name"]).join(", "),
                     link: `${mangaSavedData.mangalib_url}/read/v${chapterData["volume"]}/c${chapterData["number"]}${chapterData["branches"].length > 1 ? `?bid=` + translate["branch_id"] : ``}`
                 });
             });
         });
 
-        resData.sources.mangalib = resChapterData;
+        resData.sources.mangalib = mangalibChapters;
+
+        if (mangaSavedData.remanga_url != "") {
+            const titleRemangaResponse = await fetch(
+                `https://api.remanga.org/api/titles/${mangaSavedData.remanga_url}`
+            );
+
+            if (!titleRemangaResponse.ok) throw new Error(`Ошибка запроса к тайтлу Remanga: ${chaptersRemangaResponse.status}`);
+
+            const responseJSON = await titleRemangaResponse.json();
+
+            const branches = responseJSON["content"]["branches"];
+            const remangaChapters = [];
+
+            for (const branchKey in branches) {
+                const translate = branches[branchKey];
+
+                let pageCounter = 0;
+
+                while (true) {
+                    const chaptersRemangaResponse = await fetch(
+                        `https://api.remanga.org/api/titles/chapters/?branch_id=${translate["id"]}&ordering=-index&count=10000&page=${pageCounter + 1}`
+                    );
+                    
+                    if (!chaptersRemangaResponse.ok) throw new Error(`Ошибка запроса к главам Remanga: ${chaptersRemangaResponse.status}`);
+                    
+                    const chaptersData = (await chaptersRemangaResponse.json())["content"];
+
+                    if (chaptersData.length < 1)
+                        break;
+
+                    chaptersData.forEach(chapter => {
+                        const chapterName = `Том ${chapter["tome"]} Глава ${chapter["chapter"]}${chapter["name"] ? ` - ${chapter["name"]}` : ``}`;
+
+                        remangaChapters.push({
+                            name: chapterName,
+                            release: chapter["upload_date"].split("T")[0],
+                            translator: translate["publishers"].map(publisher => publisher["name"]).join(", "),
+                            link: `${mangaSavedData.remanga_url}/${chapter["id"]}`
+                        });
+                    });
+
+                    pageCounter++;
+                }
+            }
+
+            resData.sources.remanga = remangaChapters;
+        }
 
         return resData;
     } catch (error) {
@@ -71,22 +119,24 @@ const fetchTitle = async (id) => {
     }
 };
 
-const fetchListPage = async (pageNumber) => {
+const fetchMangalibPage = async (pageNumber) => {
     try {
-        console.log(`Парсим страницу: ${pageNumber}`);
+        console.log(`Парсим страницу Mangalib: ${pageNumber}`);
 
         const response = await fetch(
             `https://api.lib.social/api/manga?site_id[]=1&page=${pageNumber}`
         );
 
-        if (!response.ok) throw new Error(`Ошибка запроса: ${response.status}`);
+        if (!response.ok) throw new Error(`Ошибка запроса в Мангалиб: ${response.status}`);
 
-        const mangaList = (await response.json())["data"];
-        const resList = [];
+        const list = (await response.json())["data"];
 
-        for (const manga of mangaList) {
+        const resList = {};
+
+        for (const manga of list) {
             const mangaObject = {
                 name: manga["rus_name"],
+                eng_name: manga["eng_name"],
                 year: manga["releaseDateString"].substring(0, manga["releaseDateString"].length - 3),
                 status: manga["status"]["label"],
                 type: manga["type"]["label"],
@@ -96,15 +146,44 @@ const fetchListPage = async (pageNumber) => {
                 thumbnail: manga["cover"]["thumbnail"],
             };
 
-            resList.push(mangaObject);
+            resList[manga["eng_name"].toLowerCase().replaceAll(/[.,\/#!$%\^&\*;:{}=\-_`~()'«»"?]/g, "").replaceAll(/ /g, "_").replaceAll(/_+/g, "_")] = mangaObject;
+        }
 
-            console.log(`Сохраняем в БД: ${mangaObject.name}`);
+        return resList;
+    } catch (error) {
+        console.error("Ошибка при парсинге:", error);
+        return [];
+    }
+};
 
-            await prisma.manga.upsert({
-                where: { mangalib_url: mangaObject.mangalib_url },
-                update: { ...mangaObject },
-                create: { ...mangaObject },
-            });
+const fetchRemangaPage = async (pageNumber) => {
+    try {
+        console.log(`Парсим страницу Remanga: ${pageNumber}`);
+
+        const response = await fetch(
+            `https://api.remanga.org/api/search/catalog/?page=${pageNumber}&count=60&ordering=-rating`
+        );
+
+        if (!response.ok) throw new Error(`Ошибка запроса в Реманга: ${response.status}`);
+
+        const list = (await response.json())["content"];
+
+        const resList = {};
+
+        for (const manga of list) {
+            const mangaObject = {
+                name: manga["rus_name"],
+                eng_name: manga["en_name"],
+                year: manga["issue_year"],
+                // status: manga["status"]["name"],
+                type: manga["type"],
+                rating: manga["avg_rating"],
+                remanga_url: manga["dir"],
+                cover: manga["cover"]["high"],
+                thumbnail: manga["cover"]["low"],
+            };
+
+            resList[manga["en_name"].toLowerCase().replaceAll(/[.,\/#!$%\^&\*;:{}=\-_`~()'«»"?]/g, "").replaceAll(/ /g, "_").replaceAll(/_+/g, "_")] = mangaObject;
         }
 
         return resList;
@@ -141,13 +220,52 @@ const mainController = {
     parse: async (req, res) => {
         const startTime = new Date();
 
-        let finalList = [];
+        let finalList = {};
 
-        for (let i = 1; i <= HOW_MANY_PAGES_TO_PARSE; i++) {
-            finalList = finalList.concat(await fetchListPage(i));
+        let found = 0, notFound = 0, mangalibCounter = 0;
+
+        for (let i = 1; i <= HOW_MANY_MANGALIB_PAGES_TO_PARSE; i++) {
+            const currentList = await fetchMangalibPage(i);
+
+            for (const mangaEngTitle in currentList) {
+                finalList[mangaEngTitle] = currentList[mangaEngTitle];
+                mangalibCounter++;
+            }
         }
 
-        await prisma.$disconnect(); // Закрываем соединение с БД
+        for (let i = 1; i <= HOW_MANY_REMANGA_PAGES_TO_PARSE; i++) {
+            const currentList = await fetchRemangaPage(i);
+
+            for (const mangaEngTitle in currentList) {
+                if (finalList[mangaEngTitle] != undefined) {
+                    finalList[mangaEngTitle].remanga_url = currentList[mangaEngTitle].remanga_url;
+                    found++;
+                } else {
+                    // finalList[mangaEngTitle] = currentList[mangaEngTitle];
+                    notFound++;
+                }
+            }
+        }
+
+        console.log(`Найдено на Remanga и Mangalib одновременно: ${found}`);
+        console.log(`Найдено только на Remanga: ${notFound}`);
+        console.log(`Найдено только на Mangalib: ${mangalibCounter - found}`);
+
+        console.log(`Сохраняем в БД...`);
+        for (const key in finalList) {
+            const mangaObject = finalList[key];
+
+            // console.log(`Сохраняем в БД: ${mangaObject.name}`);
+
+            await prisma.manga.upsert({
+                where: { mangalib_url: mangaObject.mangalib_url },
+                update: { ...mangaObject },
+                create: { ...mangaObject },
+            });
+        }
+        console.log(`Данные сохранены!`);
+
+        await prisma.$disconnect();
 
         console.log(`Времени затрачено: ${new Date() - startTime} мс`);
         res.json(finalList);
