@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get("/parse", mainController.parse);
 router.get("/titles", mainController.getAll);
-router.get("/titles/:titleId", mainController.getTitle);
+router.get("/titles/:mangalibUrl", mainController.getTitle);
 
 export default router;

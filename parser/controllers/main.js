@@ -1,16 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const HOW_MANY_MANGALIB_PAGES_TO_PARSE = 100;
+const HOW_MANY_MANGALIB_PAGES_TO_PARSE = 20;
 const HOW_MANY_REMANGA_PAGES_TO_PARSE = 20;
 
-const fetchTitle = async (id) => {
+const fetchTitle = async (mangalibUrl) => {
     try {
-        console.log(`Парсим конкретную мангу: ${id}`);
+        console.log(`Парсим конкретную мангу: ${mangalibUrl}`);
 
         const mangaSavedData = await prisma.manga.findUnique({
             where: {
-                id: id,
+                mangalib_url: mangalibUrl,
             },
         });
 
@@ -24,7 +24,6 @@ const fetchTitle = async (id) => {
         const foundTitleData = (await titleDataResponse.json())["data"];
 
         const resData = {
-            id: id,
             name: mangaSavedData.name,
             description: foundTitleData["summary"],
             author: foundTitleData["authors"].map((author) => author.name).join(", "),
@@ -70,7 +69,7 @@ const fetchTitle = async (id) => {
                 `https://api.remanga.org/api/titles/${mangaSavedData.remanga_url}`
             );
 
-            if (!titleRemangaResponse.ok) throw new Error(`Ошибка запроса к тайтлу Remanga: ${chaptersRemangaResponse.status}`);
+            if (!titleRemangaResponse.ok) throw new Error(`Ошибка запроса к тайтлу Remanga: ${titleRemangaResponse.status}`);
 
             const responseJSON = await titleRemangaResponse.json();
 
@@ -209,8 +208,8 @@ const mainController = {
     getTitle: async (req, res) => {
         const startTime = new Date();
 
-        const id = +req.params.titleId;
-        const manga = await fetchTitle(id);
+        const mangalibUrl = req.params.mangalibUrl;
+        const manga = await fetchTitle(mangalibUrl);
 
         await prisma.$disconnect(); // Закрываем соединение с БД
 
@@ -252,6 +251,8 @@ const mainController = {
         console.log(`Найдено только на Mangalib: ${mangalibCounter - found}`);
 
         console.log(`Сохраняем в БД...`);
+        await prisma.manga.deleteMany({})
+
         for (const key in finalList) {
             const mangaObject = finalList[key];
 
