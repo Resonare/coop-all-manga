@@ -35,40 +35,29 @@ class ChapterSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=False)  # id не обязателен
-    genres = GenreSerializer(many=True, read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
+    genres = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
+    tags = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
     chapters = ChapterSerializer(many=True, read_only=True)
-    genres_input = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
-    tags_input = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
     sources = serializers.DictField(child=serializers.ListField(child=serializers.DictField()), write_only=True, required=False)
 
     class Meta:
         model = Title
         fields = [
             'id', 'name', 'description', 'author', 'year', 'status', 'type', 'rating',
-            'genres', 'tags', 'thumbnail', 'cover', 'chapters', 'sources',
-            'genres_input', 'tags_input'
+            'genres', 'tags', 'thumbnail', 'cover', 'chapters', 'sources'
         ]
         extra_kwargs = {
             'genres': {'required': False},
             'tags': {'required': False},
             'chapters': {'required': False},
-            'id': {'required': False},
         }
 
     def create(self, validated_data):
-        id_value = validated_data.pop('id', None)
-        # Если id передан и такой тайтл уже есть — возвращаем его, не создаём новый
-        if id_value is not None and Title.objects.filter(id=id_value).exists():
-            return Title.objects.get(id=id_value)
-        if id_value is not None:
-            title = Title.objects.create(id=id_value, **validated_data)
-        else:
-            title = Title.objects.create(**validated_data)
-        genres_data = validated_data.pop('genres_input', [])
-        tags_data = validated_data.pop('tags_input', [])
+        genres_data = validated_data.pop('genres', [])
+        tags_data = validated_data.pop('tags', [])
         sources_data = validated_data.pop('sources', {})
+
+        title = Title.objects.create(**validated_data)
 
         for genre_name in genres_data:
             genre, _ = Genre.objects.get_or_create(name=genre_name)

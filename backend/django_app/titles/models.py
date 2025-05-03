@@ -36,13 +36,14 @@ class Title(NameAbstract):
     """
     Модель данных для тайтла
     """
-    id = models.IntegerField(primary_key=True) 
     description = models.TextField("Описание", default="Нет описания")
     author = models.CharField("Автор", max_length=255, default="Неизвестен")
     year = models.CharField("Год выпуска", max_length=4, default="0000")
     status = models.CharField("Статус выхода", max_length=127, default="Неизвестен")
     type = models.CharField("Тип", max_length=127, default="Неизвестен")
     rating = models.FloatField("Рейтинг", default=0.0)
+    mangalib_url = models.CharField("Ссылка на MangaLib", max_length=255, null=True, unique=True)
+    remanga_url = models.CharField("Ссылка на ReManga", max_length=255, null=True, unique=True)
     genres = models.ManyToManyField(Genre, verbose_name="Жанры")
     tags = models.ManyToManyField(Tag, verbose_name="Теги")
     thumbnail = models.URLField("Превью", max_length=200, default="")
