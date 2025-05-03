@@ -28,6 +28,7 @@ nav a {
     font-weight: bold;
     padding: 10px 15px;
     transition: color 0.3s ease;
+    color: white;
 }
 
 nav a:hover {
@@ -36,7 +37,7 @@ nav a:hover {
 .checkbox-container {
     display: flex;
     align-items: center;
-    margin: 1px;
+    margin: 1px;  
 }
 .container {
     display: flex;
@@ -57,6 +58,25 @@ nav a:hover {
     padding: 20px;
     background: white;
 }
+.search-content{
+    display:flex;
+}
+
+.button-search{
+    padding: 1px 30px;
+    margin-left: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    background-color: #a9a9f5;
+    color: white;
+}
+
+.button-search:hover {
+    background-color:rgb(138, 138, 248);
+}
+
 .catalog {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -114,13 +134,15 @@ input, select {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
-.checkbox-group {
+
+
+.checkbox-group, .checkbox-container {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.checkbox-group label {
+.checkbox-group label, .checkbox-container label{
     display: flex;
     align-items: center;
     gap: 5px;

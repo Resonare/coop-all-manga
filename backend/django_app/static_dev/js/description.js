@@ -134,7 +134,6 @@ function updateChaptersList() {
     }
 }
 
-
 // Функция для переключения вкладок
 function setupTabs() {
     const tabs = document.querySelectorAll(".tab");

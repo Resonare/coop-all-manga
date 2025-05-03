@@ -132,3 +132,17 @@
     text-decoration: none;
 }
 
+.translator-button{
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    background:#a9a9f5;
+    color: white;
+    transition: background 0.3s ease;
+}
+.translator-button:hover {
+    background: #9191f8;
+}

@@ -4,6 +4,7 @@ from django.views import generic
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 import logging
+import requests
 
 from .models import Title, Chapter, Genre, Tag, Chapter
 from .serializers import TitleSerializer, GenreSerializer, TagSerializer, ChapterSerializer
@@ -15,7 +16,7 @@ class TitleList(generic.ListView):
     """Список тайтлов."""
     model = Title
     template_name = 'titles/index.html'
-    paginate_by = 1000
+    paginate_by = 30
 
     '''def get_queryset(self):
         """
@@ -28,7 +29,10 @@ class TitleList(generic.ListView):
         )[:settings.NEWS_COUNT_ON_HOME_PAGE]'''
 
     def get_context_data(self, **kwargs):
-        # get_titles('http://192.168.88.202:3000')
+        # try:
+        #     get_titles('http://192.168.88.202:3000')
+        # except requests.exceptions.ConnectTimeout:
+        #     pass
         context = super(TitleList, self).get_context_data(**kwargs)
         data = serialize("json", context['title_list'])
         context['json'] = data
@@ -40,7 +44,10 @@ class TitleDetail(generic.DetailView):
     template_name = 'titles/description.html'
 
     def get_context_data(self, **kwargs):
-        get_title('http://192.168.88.202:3000', self.kwargs['pk'])
+        # try:
+        #     get_title('http://192.168.88.202:3000', self.kwargs['pk'])
+        # except requests.exceptions.ConnectTimeout:
+        #     pass
         context = super(TitleDetail, self).get_context_data(**kwargs)
         chapters = list(Chapter.objects.all().filter(manga=self.get_object()))
         context['chapters_json'] = serialize("json", chapters)

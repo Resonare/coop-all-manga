@@ -6,22 +6,31 @@ function renderCatalog(data, filter = "") {
     catalog.innerHTML = "";  
     const fragment = document.createDocumentFragment();
 
-    data.forEach(manga => {
-        if (manga.fields.name.toLowerCase().includes(filter.toLowerCase())) {
+    data.forEach(object => {
+        manga = object.fields
+        console.log(manga)
+        if (manga.name.toLowerCase().includes(filter.toLowerCase())) {
             const itemContainer = document.createElement("div");
             itemContainer.className = "item-container";
 
             const item = document.createElement("img");
             item.className = "item";
-            item.src = manga.fields.thumbnail;
-            item.dataset.id = manga.pk;
+            item.src = manga.thumbnail;
+            item.dataset.id = object.pk;
             item.addEventListener("click", () => {
-                window.location.href = `titles/${manga.pk}`;
+                window.location.href = `${object.pk}`;
             });
+            item.title = manga.name
 
             const title = document.createElement("p");
             title.className = "title";
-            title.textContent = manga.fields.name;
+            const maxTitleLength = 15; // Максимальное количество символов для отображения
+            if (manga.name.length > maxTitleLength) {
+                title.textContent = manga.name.slice(0, maxTitleLength) + '...'; // Обрезаем название и добавляем многоточие
+            } else {
+                title.textContent = manga.name;
+            }
+            title.title = manga.name;
 
             itemContainer.appendChild(item);
             itemContainer.appendChild(title);
@@ -37,16 +46,14 @@ function setupFilterButtons() {
     const resetFiltersBtn = document.getElementById("resetFilters");
 
     applyFiltersBtn.addEventListener("click", () => {
-        const yearFrom = document.getElementById("yearFrom").value;
-        const yearTo = document.getElementById("yearTo").value;
-        const ratingMin = document.getElementById("ratingMin").value;
-        const ratingMax = document.getElementById("ratingMax").value;
+        const year = document.getElementById("year").checked;
+        const rating = document.getElementById("rating").checked;
         const popular = document.getElementById("popular").checked;
-        const genres = document.getElementById("genres").value;
-        const tags = document.getElementById("tags").value;
+        // const genres = document.getElementById("genres").value;
+        // const tags = document.getElementById("tags").value;
 
-        const ageRatings = Array.from(document.querySelectorAll("input[name='age']:checked"))
-            .map(input => input.value);
+        // const ageRatings = Array.from(document.querySelectorAll("input[name='age']:checked"))
+        //     .map(input => input.value);
     
         const types = Array.from(document.querySelectorAll("input[name='type']:checked"))
             .map(input => input.value);
@@ -56,23 +63,24 @@ function setupFilterButtons() {
 
         const filters = {
             sorting:{
-                yearFrom: yearFrom || null,
-                yearTo: yearTo || null,
-                ratingMin: ratingMin || null,
-                ratingMax: ratingMax || null,
+                year,
+                rating,
                 popular
             },
-            filter:{
-                genres: genres !== "Выбрать..." ? genres : null,
-                tags: tags !== "Выбрать..." ? tags : null,
-                ageRatings,
-                types,
-                statuses
-            }
+            // filter:{
+            //     genres: genres !== "Выбрать..." ? genres : null,
+            //     tags: tags !== "Выбрать..." ? tags : null,
+            // },
+            // ageRatings,
+            types,
+            statuses
         };
 
-        fetch("", {
+        fetch("http://127.0.0.1:8000/api/", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json"  
+            },
             body: JSON.stringify(filters)
         })
         .then(response => response.json())
@@ -89,9 +97,29 @@ function setupFilterButtons() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById("search");
-    if (searchInput) {
-        searchInput.addEventListener("input", (e) => renderCatalog(mangaData, e.target.value));
+    const searchInput = document.getElementById("search-input");
+    const searchButton = document.getElementById("search");
+
+    if (searchButton && searchInput) {
+        searchButton.addEventListener("click", () => {
+            const query = searchInput.value.trim();
+            console.log('клик')
+            if (query !== "") {
+                fetch(``)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Ошибка запроса");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        renderCatalog(data); 
+                    })
+                    .catch(error => {
+                        console.error("Ошибка при поиске:", error);
+                    });
+            }
+        });
     }
 
     renderCatalog(mangaData); 

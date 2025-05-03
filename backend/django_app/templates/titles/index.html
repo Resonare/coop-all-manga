@@ -28,19 +28,19 @@
         </div>
     
         <h3>Фильтр</h3>
-        <label>Жанры</label>
+        {% comment %} <label>Жанры</label>
         <select id="genres"><option>Выбрать...</option></select>
         <label>Теги</label>
-        <select id="tags"><option>Выбрать...</option></select>
+        <select id="tags"><option>Выбрать...</option></select> {% endcomment %}
     
-        <h3>Возрастной рейтинг</h3>
+        {% comment %} <h3>Возрастной рейтинг</h3>
         <div class="checkbox-group">
             <label><input type="checkbox" name="age" value="none"> Нет</label>
             <label><input type="checkbox" name="age" value="6"> +6</label>
             <label><input type="checkbox" name="age" value="12"> +12</label>
             <label><input type="checkbox" name="age" value="16"> +16</label>
             <label><input type="checkbox" name="age" value="18"> +18</label>
-        </div>
+        </div> {% endcomment %}
     
         <h3>Тип</h3>
         <div class="checkbox-group">
