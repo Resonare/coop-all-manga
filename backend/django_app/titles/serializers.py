@@ -44,7 +44,7 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = [
             'id', 'name', 'description', 'author', 'year', 'status', 'type', 'rating',
-            'genres', 'tags', 'thumbnail', 'cover', 'chapters', 'sources'
+            'mangalib_url', 'remanga_url', 'genres', 'tags', 'thumbnail', 'cover', 'chapters', 'sources'
         ]
         extra_kwargs = {
             'genres': {'required': False},
@@ -57,25 +57,38 @@ class TitleSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags', [])
         sources_data = validated_data.pop('sources', {})
 
-        title = Title.objects.create(**validated_data)
+        mangalib_url = validated_data.get('mangalib_url')
+        title = Title.objects.filter(mangalib_url=mangalib_url).first()
+        if title:
+            for attr, value in validated_data.items():
+                setattr(title, attr, value)
+            title.save()
+        else:
+            title = Title.objects.create(mangalib_url=mangalib_url, **validated_data)
 
-        for genre_name in genres_data:
-            genre, _ = Genre.objects.get_or_create(name=genre_name)
-            title.genres.add(genre)
+        if genres_data:
+            title.genres.clear()
+            for genre_name in genres_data:
+                genre, _ = Genre.objects.get_or_create(name=genre_name)
+                title.genres.add(genre)
 
-        for tag_name in tags_data:
-            tag, _ = Tag.objects.get_or_create(name=tag_name)
-            title.tags.add(tag)
+        if tags_data:
+            title.tags.clear()
+            for tag_name in tags_data:
+                tag, _ = Tag.objects.get_or_create(name=tag_name)
+                title.tags.add(tag)
 
         for source, chapters in sources_data.items():
             for chapter_data in chapters:
-                Chapter.objects.create(
+                Chapter.objects.update_or_create(
                     manga=title,
                     source=source,
                     name=chapter_data['name'],
-                    release=chapter_data['release'],
-                    translator=chapter_data['translator'],
-                    link=chapter_data['link']
+                    defaults={
+                        'release': chapter_data['release'],
+                        'translator': chapter_data['translator'],
+                        'link': chapter_data['link'],
+                    }
                 )
 
         return title

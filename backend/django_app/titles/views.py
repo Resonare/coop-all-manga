@@ -3,6 +3,7 @@ from django.core.serializers import serialize
 from django.views import generic
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from django.db.models import Q
 import logging
 import requests
 
@@ -73,6 +74,49 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     def perform_bulk_create(self, serializer):
         serializer.save()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        params = self.request.query_params
+        q = Q()
+
+        # Диапазон года
+        year_from = params.get('year_from')
+        year_to = params.get('year_to')
+        if year_from:
+            q &= Q(year__gte=year_from)
+        if year_to:
+            q &= Q(year__lte=year_to)
+
+        # Диапазон рейтинга
+        rating_min = params.get('rating_min')
+        rating_max = params.get('rating_max')
+        if rating_min:
+            q &= Q(rating__gte=rating_min)
+        if rating_max:
+            q &= Q(rating__lte=rating_max)
+
+        # Тип (может быть несколько: ?type=Манга&type=Манхва)
+        types = params.getlist('type')
+        if types:
+            q &= Q(type__in=types)
+
+        # Статус (может быть несколько: ?status=Завершён&status=Онгоинг)
+        statuses = params.getlist('status')
+        if statuses:
+            q &= Q(status__in=statuses)
+
+        # Поиск
+        search = params.get('search')
+        if search:
+            q &= (Q(name__icontains=search) | Q(author__icontains=search))
+        queryset = queryset.filter(q).distinct()
+        
+        # Сортировка
+        order_by = params.get('order_by')
+        if order_by in ['year', '-year', 'rating', '-rating']:
+            queryset = queryset.order_by(order_by)
+        return queryset
 
 
 class GenreViewSet(viewsets.ModelViewSet):
