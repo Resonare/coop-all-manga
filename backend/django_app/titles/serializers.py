@@ -64,7 +64,7 @@ class TitleSerializer(serializers.ModelSerializer):
                 setattr(title, attr, value)
             title.save()
         else:
-            title = Title.objects.create(mangalib_url=mangalib_url, **validated_data)
+            title = Title.objects.create(**validated_data)
 
         if genres_data:
             title.genres.clear()
