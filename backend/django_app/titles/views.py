@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.core.serializers import serialize
-from django.forms.models import model_to_dict
 from django.views import generic
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.db.models import Q
 import logging
+import json
 
 from .models import Title, Chapter, Genre, Tag, Chapter
 from .serializers import TitleSerializer, GenreSerializer, TagSerializer,ChapterSerializer, TitleShortSerializer
@@ -48,8 +48,13 @@ class TitleDetail(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(TitleDetail, self).get_context_data(**kwargs)
-        chapters = list(Chapter.objects.all().filter(manga=self.get_object()))
-        context['chapters_json'] = serialize("json", chapters)
+        mangalib_chapters = serialize("json", list(Chapter.objects.all().filter(manga=self.get_object(), source='mangalib')))
+        remanga_chapters = serialize("json", list(Chapter.objects.all().filter(manga=self.get_object(), source='remanga')))
+        chapters = json.dumps({
+            "mangalib": mangalib_chapters,
+            "remanga": remanga_chapters
+        })
+        context['chapters_json'] = chapters
         context['title_json'] = serialize("json", [context['title'], ])
         context['tags_json'] = serialize("json", list(self.object.tags.all()))
         context['genres_json'] = serialize("json", list(self.object.genres.all()))

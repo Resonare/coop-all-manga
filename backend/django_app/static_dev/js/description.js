@@ -2,6 +2,9 @@ let manga = JSON.parse(JSON.parse(document.getElementById('title_json').textCont
 let tags = JSON.parse(JSON.parse(document.getElementById('tags_json').textContent));
 let genres = JSON.parse(JSON.parse(document.getElementById('genres_json').textContent));
 let chapters = JSON.parse(JSON.parse(document.getElementById('chapters_json').textContent));
+chapters['mangalib'] = JSON.parse(chapters['mangalib'])
+chapters['remanga'] = JSON.parse(chapters['remanga'])
+console.log(manga)
 console.log(chapters)
 function updateDescriptionPage() {
     if (!manga) {
@@ -72,19 +75,19 @@ function toggleActiveSource(activeBtn, inactiveBtn) {
     inactiveBtn.classList.remove("active");
 }
 
-function updateChaptersList() {
+function updateChaptersList(source) {
     const chaptersContainer = document.querySelector("#chapters ul");
     if (!chaptersContainer) return;
 
     
     chaptersContainer.innerHTML = "";
-    if (Array.isArray(chapters)) {
+    if (Array.isArray(chapters[source])) {
         const fragment = document.createDocumentFragment();
 
-        chapters.forEach((chapter, index) => {
+        chapters[source].forEach((chapter, index) => {
             const li = document.createElement("li");
             const link = document.createElement("a");
-            link.href = "#";
+            // link.href = "#";
             link.className = "chapter-link";
             link.textContent = chapter.fields.name;
 
@@ -95,7 +98,10 @@ function updateChaptersList() {
 
             const p = document.createElement("p");
             const a = document.createElement("a");
-            a.href = chapter.fields.link;
+            let href;
+            if (source == 'mangalib') href = "https://mangalib.me/ru/"
+            else if (source == 'remanga') href = "https://remanga.org/manga/"
+            a.href = href + chapter.fields.link;
             a.target = "_blank";
             a.textContent = chapter.fields.translator;
             p.appendChild(a);
@@ -121,8 +127,8 @@ function updateChaptersList() {
             chapterInfoContainer.innerHTML = `
                 <p><strong>Название:</strong> ${chapter.fields.name}</p>
                 <p><strong>Дата выхода:</strong> ${chapter.fields.release}</p>
-                <p><strong>Переводчик:</strong> <a href="${chapter.fields.link}" target="_blank">${chapter.fields.translator}</a></p>
-                <p><strong>Ссылка:</strong> <a href="${chapter.fields.link}" target="_blank">${chapter.fields.link}</a></p>
+                <p><strong>Переводчик:</strong> <a href="${href+chapter.fields.link}" target="_blank">${chapter.fields.translator}</a></p>
+                <p><strong>Ссылка:</strong> <a href="${href+chapter.fields.link}" target="_blank">${href+chapter.fields.link}</a></p>
             `;
 
             
