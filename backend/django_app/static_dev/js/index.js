@@ -8,7 +8,6 @@ function renderCatalog(data, filter = "") {
 
     data.forEach(object => {
         manga = object.fields
-        console.log(manga)
         if (manga.name.toLowerCase().includes(filter.toLowerCase())) {
             const itemContainer = document.createElement("div");
             itemContainer.className = "item-container";
@@ -48,7 +47,7 @@ function setupFilterButtons() {
     applyFiltersBtn.addEventListener("click", () => {
         const year = document.getElementById("year").checked;
         const rating = document.getElementById("rating").checked;
-        const popular = document.getElementById("popular").checked;
+        // const popular = document.getElementById("popular").checked;
         // const genres = document.getElementById("genres").value;
         // const tags = document.getElementById("tags").value;
 
@@ -65,7 +64,7 @@ function setupFilterButtons() {
             sorting:{
                 year,
                 rating,
-                popular
+                // popular
             },
             // filter:{
             //     genres: genres !== "Выбрать..." ? genres : null,
@@ -74,6 +73,11 @@ function setupFilterButtons() {
             // ageRatings,
             types,
             statuses
+        };
+
+        const requestData = {
+            ...filters,
+            page: currentPage 
         };
 
         fetch("http://127.0.0.1:8000/api/", {
@@ -125,3 +129,67 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCatalog(mangaData); 
     setupFilterButtons();
 });
+
+let currentPage = 1;
+const pageSize = 10; // количество манги на одной странице 
+
+// добавлена функция пагинации   
+function setupPagination() {
+    const paginationContainer = document.getElementById("pagination");
+    if (!paginationContainer) return;
+
+    renderPagination();
+
+    function renderPagination() {
+        paginationContainer.innerHTML = "";
+        // ниже логика создания стрелочек и цифр страниц
+
+        // стрелка назад
+        if (currentPage > 1) {
+            const prevButton = document.createElement("button");
+            prevButton.textContent = "←";
+            prevButton.addEventListener("click", () => {
+                currentPage--;
+                fetchPage();
+            });
+            paginationContainer.appendChild(prevButton);
+        }
+
+        // текущая страница
+        const currentSpan = document.createElement("span");
+        currentSpan.textContent = currentPage;
+        paginationContainer.appendChild(currentSpan);
+
+        // следующая страница, только если впереди еще есть страницы
+        const nextPage = currentPage + 1;
+        const nextButton = document.createElement("button");
+        nextButton.textContent = nextPage;
+        nextButton.addEventListener("click", () => {
+            currentPage++;
+            fetchPage();
+        });
+        paginationContainer.appendChild(nextButton);
+
+        // стрелка вперед
+        const nextArrow = document.createElement("button");
+        nextArrow.textContent = "→";
+        nextArrow.addEventListener("click", () => {
+            currentPage++;
+            fetchPage();
+        });
+        paginationContainer.appendChild(nextArrow);
+    }
+
+    //добавлена функция для получения текущей страницы
+    function fetchPage() {
+        fetch(`http://127.0.0.1:8000/api/?page=${currentPage}`)
+            .then(response => response.json())
+            .then(data => {
+                renderCatalog(data);
+                renderPagination();
+            })
+            .catch(error => {
+                console.error("Ошибка при получении страницы:", error);
+            });
+    }
+}

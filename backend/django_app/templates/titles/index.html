@@ -10,22 +10,19 @@
 {% include "includes/header.html" %}
 <div class="container">
     <main class="content">
-        <input type="text" id="search" placeholder="Поиск...">
+        <div class="search-content">
+            <input type="text" id="search-input" placeholder="Поиск...">
+            <button id="search" class="button-search">Поиск</button>
+        </div>
         <div class="catalog" id="catalog"></div>
     </main>
     <aside class="sidebar">
         <h3>Сортировать</h3>
-        <label>Год выхода:</label>
-        <input type="number" id="yearFrom" placeholder="От" min="1930" max="2026"> 
-        <input type="number" id="yearTo" placeholder="До" min="1930" max="2026">
-        <label>Рейтинг:</label>
-        <input type="number" id="ratingMin" placeholder="Мин" min="0" max="9">
-        <input type="number" id="ratingMax" placeholder="Макс" min="1" max="10">
-        <br>
-        <div class="checkbox-container">
-            <label for="popular">Популярность</label>
-            <input type="checkbox" id="popular">
-        </div>
+            <div class="checkbox-container">
+                <label><input type="checkbox" value="year">Год выхода:</label>
+                <label><input type="checkbox" value="rating">Рейтинг:</label>
+                {% comment %} <label><input type="checkbox" value="popular">Популярность</label> {% endcomment %}
+            </div>
     
         <h3>Фильтр</h3>
         {% comment %} <label>Жанры</label>
@@ -64,6 +61,7 @@
         </div>
     </aside>
 </div>
+<div id="pagination" class="pagination-container"></div>
 {{ json|json_script:"mangaData" }}
 <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
