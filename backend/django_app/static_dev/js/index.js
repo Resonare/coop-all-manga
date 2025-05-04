@@ -1,13 +1,21 @@
 let mangaData = JSON.parse(JSON.parse(document.getElementById('mangaData').textContent));
+let url_for_get_manga = 'http://127.0.0.1:8000/api/titles/?'
+let currentPage = 1;
+setupPagination()
+mangaData = mangaData.map(manga => {
+    return {
+        id: manga.pk,
+        ...manga.fields
+    }
+})
 function renderCatalog(data, filter = "") {
     const catalog = document.getElementById("catalog");
     if (!catalog) return;
 
     catalog.innerHTML = "";  
     const fragment = document.createDocumentFragment();
-
-    data.forEach(object => {
-        manga = object.fields
+    console.log(data)
+    data.forEach(manga => {
         if (manga.name.toLowerCase().includes(filter.toLowerCase())) {
             const itemContainer = document.createElement("div");
             itemContainer.className = "item-container";
@@ -15,9 +23,9 @@ function renderCatalog(data, filter = "") {
             const item = document.createElement("img");
             item.className = "item";
             item.src = manga.thumbnail;
-            item.dataset.id = object.pk;
+            item.dataset.id = manga.id;
             item.addEventListener("click", () => {
-                window.location.href = `${object.pk}`;
+                window.location.href = `${manga.id}`;
             });
             item.title = manga.name
 
@@ -45,58 +53,62 @@ function setupFilterButtons() {
     const resetFiltersBtn = document.getElementById("resetFilters");
 
     applyFiltersBtn.addEventListener("click", () => {
-        const year = document.getElementById("year").checked;
-        const rating = document.getElementById("rating").checked;
-        // const popular = document.getElementById("popular").checked;
-        // const genres = document.getElementById("genres").value;
-        // const tags = document.getElementById("tags").value;
-
-        // const ageRatings = Array.from(document.querySelectorAll("input[name='age']:checked"))
-        //     .map(input => input.value);
-    
         const types = Array.from(document.querySelectorAll("input[name='type']:checked"))
             .map(input => input.value);
-    
         const statuses = Array.from(document.querySelectorAll("input[name='status']:checked"))
             .map(input => input.value);
+    
+        // порядок сортировки
+        let ordering = "";
+        if (document.getElementById("desc")?.checked) ordering = "-";
 
-        const filters = {
-            sorting:{
-                year,
-                rating,
-                // popular
-            },
-            // filter:{
-            //     genres: genres !== "Выбрать..." ? genres : null,
-            //     tags: tags !== "Выбрать..." ? tags : null,
-            // },
-            // ageRatings,
-            types,
-            statuses
-        };
+        // сортировка по году и рейтингу    
+        let order_by = "";
+        if (document.getElementById("year")?.checked) order_by = "year";
+        if (document.getElementById("rating")?.checked) order_by = "rating";
+    
+        const params = new URLSearchParams();
+        
+        if (order_by) params.append("order_by",  ordering + order_by);
+    
+        types.forEach(type => params.append("type", type));
+        statuses.forEach(status => params.append("status", status));
+    
+        url_for_get_manga = `http://127.0.0.1:8000/api/titles/?${params.toString()}&`;
+        console.log("Формируемый URL:", url_for_get_manga);
+        currentPage = 1
+        setupPagination()
 
-        const requestData = {
-            ...filters,
-            page: currentPage 
-        };
+        fetch(url_for_get_manga, { method: "GET" })
+            .then(response => response.json())
+            .then(data => {
+                renderCatalog(data.results);
+            })
+            .catch(error => console.error("Ошибка при получении данных:", error));
+    });
 
-        fetch("http://127.0.0.1:8000/api/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"  
-            },
-            body: JSON.stringify(filters)
-        })
-        .then(response => response.json())
-    })
+    
 
 
     resetFiltersBtn?.addEventListener("click", () => {
         document.querySelectorAll(".sidebar input, .sidebar select").forEach(input => {
             if (input.type === "checkbox") input.checked = false;
             else input.value = "";
+
+            if (input.type === "radio") input.checked = false;
+            else input.value = "";
         });
-        renderCatalog(mangaData);
+        currentPage = 1
+        setupPagination()
+        let url_for_get_manga = 'http://127.0.0.1:8000/api/titles/?'
+        fetch(url_for_get_manga + `page=${currentPage}`)
+            .then(response => response.json())
+            .then(data => {
+                renderCatalog(data.results);
+            })
+            .catch(error => {
+                console.error("Ошибка при получении страницы:", error);
+            });
     });
 }
 
@@ -107,9 +119,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchButton && searchInput) {
         searchButton.addEventListener("click", () => {
             const query = searchInput.value.trim();
-            console.log('клик')
             if (query !== "") {
-                fetch(``)
+                const params = new URLSearchParams();
+                params.append("search", query);
+
+                url_for_get_manga = `http://127.0.0.1:8000/api/titles/?${params.toString()}&`;
+                console.log("Поисковый URL:", url_for_get_manga);
+                currentPage = 1
+                setupPagination()
+
+                fetch(url_for_get_manga, { method: "GET" })
                     .then(response => {
                         if (!response.ok) {
                             throw new Error("Ошибка запроса");
@@ -117,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         return response.json();
                     })
                     .then(data => {
-                        renderCatalog(data); 
+                        renderCatalog(data.results); 
                     })
                     .catch(error => {
                         console.error("Ошибка при поиске:", error);
@@ -130,10 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupFilterButtons();
 });
 
-let currentPage = 1;
-const pageSize = 10; // количество манги на одной странице 
-
-// добавлена функция пагинации   
 function setupPagination() {
     const paginationContainer = document.getElementById("pagination");
     if (!paginationContainer) return;
@@ -142,9 +157,7 @@ function setupPagination() {
 
     function renderPagination() {
         paginationContainer.innerHTML = "";
-        // ниже логика создания стрелочек и цифр страниц
 
-        // стрелка назад
         if (currentPage > 1) {
             const prevButton = document.createElement("button");
             prevButton.textContent = "←";
@@ -155,12 +168,10 @@ function setupPagination() {
             paginationContainer.appendChild(prevButton);
         }
 
-        // текущая страница
         const currentSpan = document.createElement("span");
         currentSpan.textContent = currentPage;
         paginationContainer.appendChild(currentSpan);
 
-        // следующая страница, только если впереди еще есть страницы
         const nextPage = currentPage + 1;
         const nextButton = document.createElement("button");
         nextButton.textContent = nextPage;
@@ -170,7 +181,6 @@ function setupPagination() {
         });
         paginationContainer.appendChild(nextButton);
 
-        // стрелка вперед
         const nextArrow = document.createElement("button");
         nextArrow.textContent = "→";
         nextArrow.addEventListener("click", () => {
@@ -180,12 +190,11 @@ function setupPagination() {
         paginationContainer.appendChild(nextArrow);
     }
 
-    //добавлена функция для получения текущей страницы
     function fetchPage() {
-        fetch(`http://127.0.0.1:8000/api/?page=${currentPage}`)
+        fetch(url_for_get_manga + `page=${currentPage}`)
             .then(response => response.json())
             .then(data => {
-                renderCatalog(data);
+                renderCatalog(data.results);
                 renderPagination();
             })
             .catch(error => {

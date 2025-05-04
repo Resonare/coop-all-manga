@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.serializers import serialize
+from django.forms.models import model_to_dict
 from django.views import generic
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -16,7 +17,7 @@ class TitleList(generic.ListView):
     """Список тайтлов."""
     model = Title
     template_name = 'titles/index.html'
-    paginate_by = 20
+    paginate_by = 100
 
     '''def get_queryset(self):
         """
@@ -29,7 +30,7 @@ class TitleList(generic.ListView):
         )[:settings.NEWS_COUNT_ON_HOME_PAGE]'''
 
     def get_context_data(self, **kwargs):
-        get_titles('http://127.0.0.1:3000')
+        get_titles('http://192.168.88.201:3000')
         context = super(TitleList, self).get_context_data(**kwargs)
         data = serialize("json", context['title_list'])
         context['json'] = data
@@ -41,7 +42,7 @@ class TitleDetail(generic.DetailView):
     template_name = 'titles/description.html'
 
     def get_object(self):
-        get_title('http://127.0.0.1:3000', Title.objects.get(pk=self.kwargs['pk']).mangalib_url)
+        get_title('http://192.168.88.201:3000', Title.objects.get(pk=self.kwargs['pk']).mangalib_url)
         obj = super().get_object()
         return obj
 

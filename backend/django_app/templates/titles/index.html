@@ -19,9 +19,13 @@
     <aside class="sidebar">
         <h3>Сортировать</h3>
             <div class="checkbox-container">
-                <label><input type="checkbox" value="year">Год выхода:</label>
-                <label><input type="checkbox" value="rating">Рейтинг:</label>
-                {% comment %} <label><input type="checkbox" value="popular">Популярность</label> {% endcomment %}
+                <label><input type="radio" class="radio" name="browser" id="year" value="year">Год выхода</label>
+                <label><input type="radio" class="radio" name="browser" id="rating" value="rating">Рейтинг</label>
+            </div>
+            
+            <div class="checkbox-container">
+                <label><input type="radio" class="radio" name="order" id="asc" value="asc">По возрастанию</label>
+                <label><input type="radio" class="radio" name="order" id="desc" value="desc">По убыванию</label>
             </div>
     
         <h3>Фильтр</h3>
@@ -41,19 +45,19 @@
     
         <h3>Тип</h3>
         <div class="checkbox-group">
-            <label><input type="checkbox" name="type" value="manga"> Манга</label>
-            <label><input type="checkbox" name="type" value="manhwa"> Манхва</label>
-            <label><input type="checkbox" name="type" value="manhua"> Маньхуа</label>
-            <label><input type="checkbox" name="type" value="rumanga"> Руманга</label>
+            <label><input type="checkbox" name="type" value="Манга"> Манга</label>
+            <label><input type="checkbox" name="type" value="Манхва"> Манхва</label>
+            <label><input type="checkbox" name="type" value="Маньхуа"> Маньхуа</label>
+            <label><input type="checkbox" name="type" value="Руманга"> Руманга</label>
         </div>
     
         <h3>Статус тайтла</h3>
         <div class="checkbox-group">
-            <label><input type="checkbox" name="status" value="ongoing"> Онгоинг</label>
-            <label><input type="checkbox" name="status" value="announcement"> Анонс</label>
-            <label><input type="checkbox" name="status" value="completed"> Завершен</label>
-            <label><input type="checkbox" name="status" value="discontinued"> Прекращен</label>
-            <label><input type="checkbox" name="status" value="paused"> Приостановлен</label>
+            <label><input type="checkbox" name="status" value="Онгоинг"> Онгоинг</label>
+            <label><input type="checkbox" name="status" value="Анонс"> Анонс</label>
+            <label><input type="checkbox" name="status" value="Завершён"> Завершён</label>
+            <label><input type="checkbox" name="status" value="Прекращён"> Прекращён</label>
+            <label><input type="checkbox" name="status" value="Приостановлен"> Приостановлен</label>
         </div>
         <div class="button-container">
             <button id="applyFilters" class="button button-apply">Применить</button>
