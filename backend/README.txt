@@ -4,7 +4,7 @@
 python -m venv venv
 
 2. Активация виртуального окружения
-source venv/Source/activate
+source venv/Scripts/activate
 
 3. Установка зависимостей
 pip install -r requirements.txt
