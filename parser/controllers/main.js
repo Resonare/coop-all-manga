@@ -35,6 +35,8 @@ const fetchTitle = async (mangalibUrl) => {
             tags: foundTitleData["tags"].map((tag) => tag.name),
             thumbnail: mangaSavedData.thumbnail,
             cover: mangaSavedData.cover,
+            mangalib_url: mangaSavedData.mangalib_url,
+            remanga_url: mangaSavedData.remanga_url,
             sources: {
                 mangalib: []
             }
@@ -251,7 +253,6 @@ const mainController = {
         console.log(`Найдено только на Mangalib: ${mangalibCounter - found}`);
 
         console.log(`Сохраняем в БД...`);
-        await prisma.manga.deleteMany({})
 
         for (const key in finalList) {
             const mangaObject = finalList[key];
