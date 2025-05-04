@@ -33,6 +33,14 @@ class ChapterSerializer(serializers.ModelSerializer):
         title_instance = Title.objects.get(id=manga_data['id'])  # Находим Title по ID
         return Chapter.objects.create(manga=title_instance, **validated_data)
 
+class TitleShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Title
+        fields = [
+            'id', 'name', 'description', 'author', 'year', 'status', 'type', 'rating',
+            'mangalib_url', 'remanga_url', 'thumbnail', 'cover'
+        ]
+
 
 class TitleSerializer(serializers.ModelSerializer):
     genres = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)

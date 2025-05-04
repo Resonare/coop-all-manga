@@ -7,7 +7,7 @@ from django.db.models import Q
 import logging
 
 from .models import Title, Chapter, Genre, Tag, Chapter
-from .serializers import TitleSerializer, GenreSerializer, TagSerializer, ChapterSerializer
+from .serializers import TitleSerializer, GenreSerializer, TagSerializer,ChapterSerializer, TitleShortSerializer
 from .requests import get_title, get_titles
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class TitleList(generic.ListView):
         )[:settings.NEWS_COUNT_ON_HOME_PAGE]'''
 
     def get_context_data(self, **kwargs):
-        get_titles('http://192.168.88.201:3000')
+        get_titles('http://127.0.0.1:3000')
         context = super(TitleList, self).get_context_data(**kwargs)
         data = serialize("json", context['title_list'])
         context['json'] = data
@@ -41,7 +41,7 @@ class TitleDetail(generic.DetailView):
     template_name = 'titles/description.html'
 
     def get_object(self):
-        get_title('http://192.168.88.201:3000', Title.objects.get(pk=self.kwargs['pk']).mangalib_url)
+        get_title('http://127.0.0.1:3000', Title.objects.get(pk=self.kwargs['pk']).mangalib_url)
         obj = super().get_object()
         return obj
 
@@ -58,6 +58,11 @@ class TitleDetail(generic.DetailView):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return TitleShortSerializer
+        return TitleSerializer
 
     def create(self, request, *args, **kwargs):
         # Если пришёл массив объектов
