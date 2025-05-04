@@ -11,7 +11,7 @@ from .models import Title, Chapter, Genre, Tag, Chapter
 from .serializers import TitleSerializer, GenreSerializer, TagSerializer,ChapterSerializer, TitleShortSerializer
 from .requests import get_title, get_titles
 logger = logging.getLogger(__name__)
-
+parser_url = 'http://192.168.88.201:3000'
 
 class TitleList(generic.ListView):
     """Список тайтлов."""
@@ -30,7 +30,7 @@ class TitleList(generic.ListView):
         )[:settings.NEWS_COUNT_ON_HOME_PAGE]'''
 
     def get_context_data(self, **kwargs):
-        get_titles('http://192.168.88.201:3000')
+        get_titles(parser_url)
         context = super(TitleList, self).get_context_data(**kwargs)
         data = serialize("json", context['title_list'])
         context['json'] = data
@@ -42,7 +42,7 @@ class TitleDetail(generic.DetailView):
     template_name = 'titles/description.html'
 
     def get_object(self):
-        get_title('http://192.168.88.201:3000', Title.objects.get(pk=self.kwargs['pk']).mangalib_url)
+        get_title(parser_url, Title.objects.get(pk=self.kwargs['pk']).mangalib_url)
         obj = super().get_object()
         return obj
 
